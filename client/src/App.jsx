@@ -5,31 +5,25 @@ const API_URL = 'http://localhost:3001/api';
 
 function App() {
   // --- STATE MANAGEMENT ---
-  // État pour stocker la liste des habitudes
   const [habits, setHabits] = useState([]);
-  // État pour le champ de saisie du formulaire
   const [newHabitName, setNewHabitName] = useState('');
-  // États pour la gestion du chargement et des erreurs
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // --- DATA FETCHING ---
-  // Fonction pour récupérer les habitudes depuis l'API
   const fetchHabits = useCallback(async () => {
     try {
-      setError(null); // Réinitialiser les erreurs
-      setLoading(true); // Indiquer le début du chargement
+      setError(null);
+      setLoading(true);
       const response = await fetch(`${API_URL}/habits`);
-      if (!response.ok) {
-        throw new Error("La réponse du réseau n'était pas OK");
-      }
+      if (!response.ok) throw new Error("La réponse du réseau n'était pas OK");
       const data = await response.json();
-      setHabits(data.data); // Mettre à jour notre état avec les données reçues
+      setHabits(data.data);
     } catch (err) {
-      setError("Impossible de charger les habitudes. Le serveur est-il en ligne ?");
+      setError("Impossible de charger les habitudes.");
       console.error(err);
     } finally {
-      setLoading(false); // Indiquer la fin du chargement
+      setLoading(false);
     }
   }, []);
 
@@ -40,31 +34,39 @@ function App() {
 
 
   // --- EVENT HANDLERS ---
-  // Fonction pour gérer la soumission du formulaire
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Empêcher le rechargement de la page
-    
-    if (!newHabitName.trim()) return; // Ne rien faire si le champ est vide
+    event.preventDefault();
+    if (!newHabitName.trim()) return;
 
     try {
       const response = await fetch(`${API_URL}/habits`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newHabitName }),
       });
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de la création de l'habitude");
-      }
-      
-      setNewHabitName(''); // Vider le champ de saisie après succès
-      await fetchHabits(); // Recharger la liste des habitudes pour afficher la nouvelle
-      
+      if (!response.ok) throw new Error("Erreur lors de la création");
+      setNewHabitName('');
+      await fetchHabits();
     } catch (err) {
       setError("Impossible d'ajouter l'habitude.");
       console.error(err);
+    }
+  };
+
+  // --- NOUVELLE FONCTION ---
+  const handleDelete = async (id) => {
+    // On ajoute une confirmation pour éviter les suppressions accidentelles
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette habitude ?")) {
+      try {
+        const response = await fetch(`${API_URL}/habits/${id}`, {
+          method: 'DELETE',
+        });
+        if (!response.ok) throw new Error("Erreur lors de la suppression");
+        await fetchHabits(); // Recharger la liste pour refléter la suppression
+      } catch (err) {
+        setError("Impossible de supprimer l'habitude.");
+        console.error(err);
+      }
     }
   };
 
@@ -98,7 +100,11 @@ function App() {
               {habits.length > 0 ? (
                 habits.map(habit => (
                   <li key={habit.id} className="habit-item">
-                    {habit.name}
+                    <span>{habit.name}</span>
+                    {/* --- BOUTON DE SUPPRESSION AJOUTÉ ICI --- */}
+                    <button onClick={() => handleDelete(habit.id)} className="delete-button">
+                      Supprimer
+                    </button>
                   </li>
                 ))
               ) : (

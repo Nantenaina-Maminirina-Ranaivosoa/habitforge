@@ -53,6 +53,26 @@ app.post('/api/habits', (req, res) => {
   });
 });
 
+// ROUTE 3 : Supprimer une habitude
+app.delete('/api/habits/:id', (req, res) => {
+  const { id } = req.params; // On récupère l'id depuis les paramètres de l'URL
+  const sql = 'DELETE FROM habits WHERE id = ?';
+
+  db.run(sql, id, function(err) {
+    if (err) {
+      res.status(500).json({ "error": err.message });
+      return;
+    }
+    // this.changes contient le nombre de lignes affectées. 
+    // Si 0, l'id n'a pas été trouvé.
+    if (this.changes === 0) {
+      res.status(404).json({ "error": "Aucune habitude trouvée avec cet ID." });
+      return;
+    }
+    res.json({ "message": "Habitude supprimée avec succès", changes: this.changes });
+  });
+});
+
 // --- DÉMARRAGE DU SERVEUR ---
 app.listen(PORT, () => {
   console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`);
