@@ -94,3 +94,58 @@ main {
 .error-message {
   color: #fa3e3e;
 }
+
+.habit-actions, .edit-actions {
+  display: flex;
+  gap: 10px;
+  margin-left: 1rem;
+}
+
+.edit-button {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: #1877f2;
+  background-color: #e7f3ff;
+  border: 1px solid #1877f2;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.edit-button:hover {
+  background-color: #dceafb;
+}
+
+.edit-form {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+}
+
+.save-button {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: white;
+  background-color: #31a24c;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.save-button:hover {
+  background-color: #2b8a40;
+}
+
+.cancel-button {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: #606770;
+  background-color: #e4e6eb;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.cancel-button:hover {
+  background-color: #d8dbdf;
+}

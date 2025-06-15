@@ -73,6 +73,36 @@ app.delete('/api/habits/:id', (req, res) => {
   });
 });
 
+
+// ROUTE 4 : Mettre à jour une habitude (Update)
+app.put('/api/habits/:id', (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body; // On récupère le nouveau nom depuis le corps de la requête
+
+  if (!name) {
+    return res.status(400).json({ "error": "Le nouveau nom est requis." });
+  }
+
+  const sql = 'UPDATE habits SET name = ? WHERE id = ?';
+  const params = [name, id];
+
+  db.run(sql, params, function(err) {
+    if (err) {
+      res.status(500).json({ "error": err.message });
+      return;
+    }
+    if (this.changes === 0) {
+      res.status(404).json({ "error": "Aucune habitude trouvée avec cet ID." });
+      return;
+    }
+    res.json({
+      message: "Habitude mise à jour avec succès",
+      data: { id: id, name: name },
+      changes: this.changes
+    });
+  });
+});
+
 // --- DÉMARRAGE DU SERVEUR ---
 app.listen(PORT, () => {
   console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`);
