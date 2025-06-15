@@ -59,33 +59,10 @@ main {
   padding: 0;
 }
 
-.habit-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #ffffff;
-  padding: 15px;
-  border: 1px solid #dddfe2;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  text-align: left;
-}
-
 .habit-item span {
   flex-grow: 1;
 }
 
-.delete-button {
-  padding: 8px 12px;
-  font-size: 0.9rem;
-  color: white;
-  background-color: #fa3e3e;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-left: 1rem;
-  transition: background-color 0.2s;
-}
 
 .delete-button:hover {
   background-color: #e33434;
@@ -148,4 +125,72 @@ main {
 }
 .cancel-button:hover {
   background-color: #d8dbdf;
+}
+
+.habit-list-container { margin-top: 2rem; }
+.habit-list { list-style: none; padding: 0; }
+
+.habit-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 12px 20px;
+  border: 1px solid #dddfe2;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  transition: all 0.2s ease-in-out;
+}
+
+.habit-item.completed {
+  background-color: #f0f8ff; /* AliceBlue */
+  border-left: 5px solid #28a745; /* Green */
+}
+
+.habit-item.completed .habit-name {
+  text-decoration: line-through;
+  color: #6c757d;
+}
+
+.habit-info { display: flex; align-items: center; flex-grow: 1; }
+.habit-name { margin: 0 15px; font-size: 1.1rem; }
+.habit-actions { display: flex; align-items: center; gap: 15px; }
+
+.complete-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #28a745;
+}
+
+.complete-button:hover:not(:disabled) { border-color: #28a745; }
+
+.complete-button:disabled {
+  border-color: #28a745;
+  background-color: #28a745;
+  cursor: not-allowed;
+}
+.complete-button:disabled span { color: white; }
+
+.habit-streak {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ff9800;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #dc3545;
+  padding: 5px;
 }

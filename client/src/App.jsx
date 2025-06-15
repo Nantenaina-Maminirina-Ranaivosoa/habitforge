@@ -106,6 +106,25 @@ function App() {
     }
   };
 
+  // --- NOUVELLE FONCTION ---
+  const handleComplete = async (habitId) => {
+    try {
+      const response = await fetch(`${API_URL}/habits/${habitId}/complete`, {
+        method: "POST",
+      });
+      if (response.status === 409) {
+        // 409 Conflict: déjà complété
+        console.log("Habitude déjà complétée aujourd'hui.");
+        return;
+      }
+      if (!response.ok) throw new Error("Erreur lors de la complétion");
+
+      await fetchHabits(); // Recharger les données pour mettre à jour l'UI
+    } catch (err) {
+      console.error("Impossible de compléter l'habitude:", err);
+    }
+  };
+
   // --- RENDER ---
   return (
     <div className="App">
@@ -137,7 +156,19 @@ function App() {
             <ul className="habit-list">
               {habits.length > 0 ? (
                 habits.map((habit) => (
-                  <li key={habit.id} className="habit-item">
+                  <li
+                    key={habit.id}
+                    className={`habit-item ${
+                      habit.completed_today ? "completed" : ""
+                    }`}
+                  >
+                    <button
+                      className="complete-button"
+                      onClick={() => handleComplete(habit.id)}
+                      disabled={habit.completed_today}
+                    >
+                      ✓
+                    </button>
                     {editingHabitId === habit.id ? (
                       // --- VUE D'ÉDITION (si l'ID correspond) ---
                       <form onSubmit={handleUpdateSubmit} className="edit-form">
@@ -162,7 +193,10 @@ function App() {
                     ) : (
                       // --- VUE NORMALE (sinon) ---
                       <>
-                        <span>{habit.name}</span>
+                        <span className="habit-name">{habit.name}</span>
+                        <span className="habit-streak">
+                          🔥 {habit.current_streak}
+                        </span>
                         <div className="habit-actions">
                           <button
                             onClick={() => handleEditClick(habit)}
@@ -174,7 +208,7 @@ function App() {
                             onClick={() => handleDelete(habit.id)}
                             className="delete-button"
                           >
-                            Supprimer
+                            🗑️
                           </button>
                         </div>
                       </>
