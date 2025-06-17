@@ -15,7 +15,12 @@ function Navbar() {
 
     return (
         <nav className="navbar">
+          <div className="nav-left">
             <NavLink to="/" className="nav-brand">HabitForge</NavLink>
+                        {user && ( // Le lien n'apparaît que si on est connecté
+                <NavLink to="/dashboard" className="nav-link-item">Dashboard</NavLink>
+            )}
+          </div>
             <div className="nav-links">
                 {user ? (
                     <>

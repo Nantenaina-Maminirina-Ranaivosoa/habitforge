@@ -84,6 +84,59 @@ app.get('/api/auth/me', protect, (req, res) => {
   });
 });
 
+
+// --- NOUVELLE ROUTE POUR LES STATS DU DASHBOARD ---
+app.get('/api/stats/dashboard', protect, (req, res) => {
+    const userId = req.user.id;
+    const promises = [];
+    const stats = {};
+
+    // Promesse 1: Stats générales (total habitudes, meilleure série)
+    promises.push(new Promise((resolve, reject) => {
+        const sql = "SELECT COUNT(*) as totalHabits, MAX(longest_streak) as bestStreak FROM habits WHERE user_id = ?";
+        db.get(sql, [userId], (err, row) => {
+            if (err) reject(err);
+            stats.totalHabits = row.totalHabits || 0;
+            stats.bestStreak = row.bestStreak || 0;
+            resolve();
+        });
+    }));
+
+    // Promesse 2: Total des complétions
+    promises.push(new Promise((resolve, reject) => {
+        const sql = `SELECT COUNT(*) as totalCompletions FROM habit_completions hc
+                     JOIN habits h ON hc.habit_id = h.id WHERE h.user_id = ?`;
+        db.get(sql, [userId], (err, row) => {
+            if (err) reject(err);
+            stats.totalCompletions = row.totalCompletions || 0;
+            resolve();
+        });
+    }));
+
+    // Promesse 3: Données pour le graphique des 7 derniers jours
+    promises.push(new Promise((resolve, reject) => {
+        const sql = `
+            SELECT strftime('%Y-%m-%d', completion_date) as date, COUNT(*) as completions
+            FROM habit_completions hc JOIN habits h ON hc.habit_id = h.id
+            WHERE h.user_id = ? AND hc.completion_date >= DATE('now', '-6 days', 'localtime')
+            GROUP BY date ORDER BY date ASC
+        `;
+        db.all(sql, [userId], (err, rows) => {
+            if (err) reject(err);
+            stats.weeklyCompletions = rows;
+            resolve();
+        });
+    }));
+
+    // Exécuter toutes les promesses en parallèle
+    Promise.all(promises)
+        .then(() => res.json(stats))
+        .catch(err => res.status(500).json({ error: err.message }));
+});
+
+
+
+
 // --- ROUTES DES HABITUDES (PROTÉGÉES) ---
 
 // GET /api/habits
