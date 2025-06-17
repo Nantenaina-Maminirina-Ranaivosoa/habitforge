@@ -1,0 +1,12 @@
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+.user-info span {
+  background-color: #f0f2f5;
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
+}
